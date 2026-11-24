@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package campusevents;
+
+// Contrat interne entre bookings-service (client) et events-service (serveur).
+service EventsService {
+  rpc GetEvent (EventRequest) returns (Event);
+  // Prend une place. RESOURCE_EXHAUSTED si l'evenement est complet.
+  rpc ReserveSeat (EventRequest) returns (Event);
+  // Rend une place (annulation, ou compensation si la reservation echoue).
+  rpc ReleaseSeat (EventRequest) returns (Event);
+}
+
+message EventRequest {
+  int32 id = 1;
+}
+
+message Event {
+  int32 id = 1;
+  string title = 2;
+  string description = 3;
+  string location = 4;
+  string date = 5; // ISO 8601
+  int32 capacity = 6;
+  int32 seats_left = 7;
+}
