@@ -1,0 +1,17 @@
+apiVersion: networking.istio.io/v1
+kind: DestinationRule
+metadata:
+  name: events-service
+  namespace: campusevents
+spec:
+  host: events-service
+  trafficPolicy:
+    portLevelSettings:
+      - port:
+          number: 3001              
+        connectionPool:
+          tcp:
+            maxConnections: 1     
+          http:
+            http1MaxPendingRequests: 1   
+            maxRequestsPerConnection: 1  
