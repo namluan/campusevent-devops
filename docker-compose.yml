@@ -1,0 +1,50 @@
+# Test local sans Kubernetes : docker compose up --build  ->  http://localhost:8080
+name: campusevents
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?copier .env.example en .env}
+      EVENTS_DB_PASSWORD: ${EVENTS_DB_PASSWORD:?}
+      BOOKINGS_DB_PASSWORD: ${BOOKINGS_DB_PASSWORD:?}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./compose/init-databases.sh:/docker-entrypoint-initdb.d/init-databases.sh:ro
+
+  events-service:
+    build: { context: ., dockerfile: services/events-service/Dockerfile }
+    image: namluuu/events-service:1.0
+    environment:
+      DB_MODE: postgres
+      DB_HOST: postgres
+      DB_NAME: events_db
+      DB_USER: events_db
+      DB_PASSWORD: ${EVENTS_DB_PASSWORD:?}
+    depends_on: [postgres]
+
+  bookings-service:
+    build: { context: ., dockerfile: services/bookings-service/Dockerfile }
+    image: namluuu/bookings-service:1.0
+    environment:
+      EVENTS_GRPC_URL: events-service:50051
+      DB_MODE: postgres
+      DB_HOST: postgres
+      DB_NAME: bookings_db
+      DB_USER: bookings_db
+      DB_PASSWORD: ${BOOKINGS_DB_PASSWORD:?}
+    depends_on: [postgres, events-service]
+
+  frontend:
+    build: { context: ., dockerfile: frontend/Dockerfile }
+    image: namluuu/frontend:1.0
+
+  gateway:
+    image: nginxinc/nginx-unprivileged:1.28-alpine
+    ports: ["8080:8080"]
+    volumes:
+      - ./compose/gateway.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on: [events-service, bookings-service, frontend]
+
+volumes:
+  postgres-data:
