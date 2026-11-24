@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: events-service
+  namespace: campusevents
+spec:
+  # Un seul replica tant que les donnees sont en memoire (etapes 1 a 3).
+  replicas: 1
+  selector:
+    matchLabels:
+      app: events-service
+  template:
+    metadata:
+      labels:
+        app: events-service
+        version: v1
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+      containers:
+        - name: events-service
+          image: namluuu/events-service:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3001
+            - name: grpc
+              containerPort: 50051
+          envFrom:
+            - configMapRef:
+                name: events-config
+            - secretRef:
+                name: events-db
+                optional: true # n'existe qu'a partir de l'etape 4
+          livenessProbe:
+            httpGet: { path: /health, port: http }
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: { path: /ready, port: http }
+            periodSeconds: 5
+            timeoutSeconds: 4
+          resources:
+            requests: { cpu: 50m, memory: 64Mi }
+            limits: { cpu: 500m, memory: 256Mi }
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: { drop: [ALL] }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: events-service
+  namespace: campusevents
+spec:
+  selector:
+    app: events-service
+  ports:
+    - name: http
+      port: 3001
+      targetPort: http
+    - name: grpc
+      port: 50051
+      targetPort: grpc

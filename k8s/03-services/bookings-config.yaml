@@ -1,0 +1,10 @@
+# Remplacee a l'etape 4 par k8s/04-database/bookings-config.yaml.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bookings-config
+  namespace: campusevents
+data:
+  DB_MODE: memory
+  # Nom DNS du Service Kubernetes : l'adresse n'est pas codee en dur.
+  EVENTS_GRPC_URL: events-service:50051

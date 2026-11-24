@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookings-service
+  namespace: campusevents
+spec:
+  # Un seul replica tant que les donnees sont en memoire (etape 3).
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bookings-service
+  template:
+    metadata:
+      labels:
+        app: bookings-service
+        version: v1
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+      containers:
+        - name: bookings-service
+          image: namluuu/bookings-service:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3002
+          envFrom:
+            - configMapRef:
+                name: bookings-config
+            - secretRef:
+                name: bookings-db
+                optional: true # n'existe qu'a partir de l'etape 4
+          livenessProbe:
+            httpGet: { path: /health, port: http }
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: { path: /ready, port: http }
+            periodSeconds: 5
+            timeoutSeconds: 4
+          resources:
+            requests: { cpu: 50m, memory: 64Mi }
+            limits: { cpu: 500m, memory: 256Mi }
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: { drop: [ALL] }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bookings-service
+  namespace: campusevents
+spec:
+  selector:
+    app: bookings-service
+  ports:
+    - name: http
+      port: 3002
+      targetPort: http

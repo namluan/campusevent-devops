@@ -1,0 +1,19 @@
+# Etape 2 : seul events-service existe. Remplace a l'etape 3 par k8s/03-services/ingress.yaml.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: campusevents
+  namespace: campusevents
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: campusevents.localhost
+      http:
+        paths:
+          - path: /api/events
+            pathType: Prefix
+            backend:
+              service:
+                name: events-service
+                port:
+                  name: http

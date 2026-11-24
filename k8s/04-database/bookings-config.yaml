@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bookings-config
+  namespace: campusevents
+data:
+  EVENTS_GRPC_URL: events-service:50051
+  DB_MODE: postgres
+  DB_HOST: postgres
+  DB_NAME: bookings_db
+  DB_USER: bookings_db

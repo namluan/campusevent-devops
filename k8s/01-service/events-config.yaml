@@ -1,0 +1,8 @@
+# Remplacee a l'etape 4 par k8s/04-database/events-config.yaml.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: events-config
+  namespace: campusevents
+data:
+  DB_MODE: memory
