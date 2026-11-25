@@ -1,0 +1,46 @@
+name: CI - repository security
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  secrets:
+    name: Secret detection
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout complete history
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      # L'action officielle ne lit que les commits de la PR ; cette commande lit tout
+      # l'historique de la branche. --redact masque la valeur trouvée dans les logs.
+      - name: Scan Git history with Gitleaks
+        run: |
+          mkdir -p build
+          docker run --rm -v "$PWD:/repo" ghcr.io/gitleaks/gitleaks:v8.30.1 \
+            git /repo --log-opts=HEAD --redact --verbose \
+            --report-format sarif --report-path /repo/build/gitleaks.sarif
+
+      - name: Upload Gitleaks report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: gitleaks-report
+          path: build/gitleaks.sarif
+          if-no-files-found: error
+          retention-days: 7
