@@ -19,7 +19,9 @@ export function createMemoryRepository() {
     },
     // Renvoie null si cette personne a deja reserve cet evenement.
     async create({ eventId, name, email }) {
-      if (find(eventId, email)) return null;
+      if (find(eventId, email)) {
+        return null;
+      }
       const booking = { id: nextId++, eventId, name, email, createdAt: new Date().toISOString() };
       bookings.set(booking.id, booking);
       return booking;

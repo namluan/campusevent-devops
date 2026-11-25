@@ -19,7 +19,9 @@ const repository = usePostgres
 const events = createEventsClient(env.EVENTS_GRPC_URL ?? 'localhost:50051');
 const port = Number(env.PORT ?? 3002);
 const httpServer = createApp(repository, events).listen(port, (error) => {
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
   console.log(`bookings-service : REST ${port}, stockage ${usePostgres ? 'postgres' : 'memory'}`);
 });
 

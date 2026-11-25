@@ -1,7 +1,10 @@
 import assert from 'node:assert/strict';
 import { after, before, beforeEach, test } from 'node:test';
+
 // Le vrai serveur gRPC de events-service : le contrat est teste de bout en bout.
 import { createGrpcServer, listenGrpc } from '../../events-service/src/grpcServer.js';
+// Exception locale : Prettier ne coupe pas un import à un seul élément.
+// eslint-disable-next-line @stylistic/max-len
 import { createMemoryRepository as createEventsRepository } from '../../events-service/src/memoryRepository.js';
 import { createApp } from '../src/app.js';
 import { createEventsClient } from '../src/eventsClient.js';
@@ -20,7 +23,10 @@ const current = (get) => new Proxy({}, { get: (_, name) => get()[name] });
 before(async () => {
   grpcServer = createGrpcServer(current(() => eventsRepository));
   client = createEventsClient(`localhost:${await listenGrpc(grpcServer, 0)}`);
-  httpServer = createApp(current(() => repository), current(() => events)).listen(0);
+  httpServer = createApp(
+    current(() => repository),
+    current(() => events),
+  ).listen(0);
   await new Promise((resolve) => httpServer.once('listening', resolve));
   url = `http://localhost:${httpServer.address().port}/api/bookings`;
 });
@@ -32,7 +38,11 @@ after(() => {
 beforeEach(async () => {
   eventsRepository = createEventsRepository({ seed: false });
   await eventsRepository.create({
-    title: 'Test', description: '', location: 'Amphi', date: '2099-01-01T10:00:00.000Z', capacity: 2,
+    title: 'Test',
+    description: '',
+    location: 'Amphi',
+    date: '2099-01-01T10:00:00.000Z',
+    capacity: 2,
   });
   repository = createMemoryRepository();
   events = client;

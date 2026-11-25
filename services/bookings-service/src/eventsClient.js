@@ -1,4 +1,5 @@
 import { fileURLToPath } from 'node:url';
+
 import grpc from '@grpc/grpc-js';
 import protoLoader from '@grpc/proto-loader';
 
@@ -19,7 +20,9 @@ export function createEventsClient(address) {
   const call = (method) => (id) =>
     new Promise((resolve, reject) => {
       const deadline = new Date(Date.now() + TIMEOUT_MS);
-      client[method]({ id }, { deadline }, (error, event) => (error ? reject(error) : resolve(event)));
+      client[method]({ id }, { deadline }, (error, event) =>
+        error ? reject(error) : resolve(event),
+      );
     });
 
   return {

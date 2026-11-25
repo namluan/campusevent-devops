@@ -1,4 +1,5 @@
 import pg from 'pg';
+
 import { seedEvents } from './seed.js';
 
 const toEvent = (row) =>
@@ -42,7 +43,9 @@ export function createPostgresRepository(config) {
             capacity INTEGER NOT NULL CHECK (capacity > 0),
             seats_left INTEGER NOT NULL CHECK (seats_left BETWEEN 0 AND capacity)
           )`);
-          for (const event of seedEvents()) await client.query(INSERT, insertValues(event));
+          for (const event of seedEvents()) {
+            await client.query(INSERT, insertValues(event));
+          }
         }
         await client.query('COMMIT');
         initialized = true;
@@ -54,7 +57,9 @@ export function createPostgresRepository(config) {
       }
     },
     async isReady() {
-      if (!initialized) throw new Error('Base pas encore initialisée');
+      if (!initialized) {
+        throw new Error('Base pas encore initialisée');
+      }
       await pool.query('SELECT 1');
       return true;
     },
@@ -80,7 +85,8 @@ export function createPostgresRepository(config) {
     // Une seule requete : deux demandes simultanees ne peuvent pas prendre la meme place.
     async reserveSeat(id) {
       const { rows } = await pool.query(
-        'UPDATE events SET seats_left = seats_left - 1 WHERE id = $1 AND seats_left > 0 RETURNING *',
+        `UPDATE events SET seats_left = seats_left - 1
+         WHERE id = $1 AND seats_left > 0 RETURNING *`,
         [id],
       );
       return toEvent(rows[0]) ?? null;
