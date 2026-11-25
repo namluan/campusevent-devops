@@ -1,0 +1,18 @@
+{
+  "name": "campusevents-tooling",
+  "private": true,
+  "description": "Outils de qualité communs aux services (aucune dépendance applicative)",
+  "scripts": {
+    "lint:events": "eslint services/events-service && prettier --check services/events-service",
+    "lint:bookings": "eslint services/bookings-service && prettier --check services/bookings-service",
+    "fix": "prettier --write services && eslint --fix services"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@stylistic/eslint-plugin": "^6.0.1",
+    "eslint": "^10.15.0",
+    "eslint-plugin-simple-import-sort": "^14.0.0",
+    "globals": "^17.14.0",
+    "prettier": "^3.10.1"
+  }
+}

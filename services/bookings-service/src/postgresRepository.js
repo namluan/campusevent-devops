@@ -41,12 +41,16 @@ export function createPostgresRepository(config) {
       }
     },
     async isReady() {
-      if (!initialized) throw new Error('Base pas encore initialisée');
+      if (!initialized) {
+        throw new Error('Base pas encore initialisée');
+      }
       await pool.query('SELECT 1');
       return true;
     },
     async listByEmail(email) {
-      const { rows } = await pool.query('SELECT * FROM bookings WHERE email = $1 ORDER BY id', [email]);
+      const { rows } = await pool.query('SELECT * FROM bookings WHERE email = $1 ORDER BY id', [
+        email,
+      ]);
       return rows.map(toBooking);
     },
     async exists(eventId, email) {

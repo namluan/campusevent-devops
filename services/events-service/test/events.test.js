@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { after, before, beforeEach, test } from 'node:test';
+
 import { createApp } from '../src/app.js';
 import { createMemoryRepository } from '../src/memoryRepository.js';
 
@@ -47,12 +48,15 @@ test('refuse les données invalides', async () => {
     { ...valid(), date: '2020-01-01T10:00:00Z' },
     '{ json cassé',
   ];
-  for (const body of cases) assert.equal((await post(body)).status, 400, JSON.stringify(body));
+  for (const body of cases) {
+    assert.equal((await post(body)).status, 400, JSON.stringify(body));
+  }
 });
 
 test('404 pour un identifiant inconnu ou mal formé', async () => {
-  for (const id of ['99', 'abc', '0', '99999999999'])
+  for (const id of ['99', 'abc', '0', '99999999999']) {
     assert.equal((await fetch(`${url}/api/events/${id}`)).status, 404);
+  }
 });
 
 test('supprime un événement vide mais pas un événement réservé', async () => {
@@ -70,7 +74,9 @@ test('les places ne sortent jamais de [0, capacity]', async () => {
   assert.equal((await repository.reserveSeat(id)).seatsLeft, 1);
   assert.equal((await repository.reserveSeat(id)).seatsLeft, 0);
   assert.equal(await repository.reserveSeat(id), null);
-  for (let i = 0; i < 4; i++) await repository.releaseSeat(id);
+  for (let i = 0; i < 4; i++) {
+    await repository.releaseSeat(id);
+  }
   assert.equal((await repository.get(id)).seatsLeft, 2);
 });
 

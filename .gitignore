@@ -1,5 +1,6 @@
 node_modules/
 dist/
+build/
 .env
 # Les vrais mots de passe ne vont jamais dans Git : seuls les .example sont versionnes
 k8s/**/secret.yaml

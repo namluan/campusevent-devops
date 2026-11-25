@@ -20,10 +20,11 @@ const grpcServer = createGrpcServer(repository);
 const grpcPort = await listenGrpc(grpcServer, Number(env.GRPC_PORT ?? 50051));
 const port = Number(env.PORT ?? 3001);
 const httpServer = createApp(repository).listen(port, (error) => {
-  if (error) throw error;
-  console.log(
-    `events-service : REST ${port}, gRPC ${grpcPort}, stockage ${usePostgres ? 'postgres' : 'memory'}`,
-  );
+  if (error) {
+    throw error;
+  }
+  const storage = usePostgres ? 'postgres' : 'memory';
+  console.log(`events-service : REST ${port}, gRPC ${grpcPort}, stockage ${storage}`);
 });
 
 // Arret propre quand Kubernetes supprime le pod.
