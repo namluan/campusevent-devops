@@ -26,6 +26,8 @@ permissions:
 
 env:
   IMAGE: ghcr.io/${{ github.repository }}/bookings-service
+  # Pas d'artefact .dockerbuild, qui serait conservé 90 jours.
+  DOCKER_BUILD_RECORD_UPLOAD: false
 
 jobs:
   test:
