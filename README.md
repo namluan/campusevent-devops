@@ -13,6 +13,15 @@ Avancement : étapes 1 à 4 faites (service, Ingress, deuxième service, base de
 
 Toutes les commandes se lancent depuis la racine du projet, dans PowerShell.
 
+## CI et qualité (TP DevOps)
+
+Le compte rendu est dans [docs/TP01.md](docs/TP01.md). Pour lancer les mêmes contrôles que la CI :
+
+```powershell
+python scripts/course.py install
+python scripts/course.py verify
+```
+
 ## Tests unitaires
 
 ```powershell

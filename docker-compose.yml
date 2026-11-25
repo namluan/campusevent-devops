@@ -1,5 +1,5 @@
 # Test local sans Kubernetes : docker compose up --build  ->  http://localhost:8080
-name: campusevents
+name: campusevents-devops
 
 services:
   postgres:
