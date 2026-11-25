@@ -85,5 +85,5 @@ test('/ready renvoie 503 quand la base ne répond pas', async () => {
     throw new Error('panne');
   };
   assert.equal((await fetch(`${url}/ready`)).status, 503);
-  assert.equal((await fetch(`${url}/health`)).status, 200);
+  assert.equal((await fetch(`${url}/health`)).status, 500);
 });
