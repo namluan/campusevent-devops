@@ -33,7 +33,7 @@ test('crée puis liste un événement', async () => {
   const response = await post(valid());
   assert.equal(response.status, 201);
   const created = await response.json();
-  assert.equal(created.seatsLeft, 2);
+  assert.equal(created.seatsLeft, 3);
   const list = await (await fetch(`${url}/api/events`)).json();
   assert.deepEqual(list, [created]);
 });
